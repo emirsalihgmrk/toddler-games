@@ -1,3 +1,16 @@
-# Godot 4+ specific ignores
+# Godot 4+ önbellek ve import dizini
 .godot/
-/android/
+
+# Dışa aktarma (export) çıktıları
+export/
+build/
+*.apk
+*.aab
+*.exe
+*.zip
+
+# Sistem ve editör dosyaları
+.DS_Store
+Thumbs.db
+.vs/
+.idea/

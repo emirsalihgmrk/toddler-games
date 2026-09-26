@@ -21,7 +21,16 @@ shader = SubResource("Shader_grid")
 [sub_resource type="Shader" id="Shader_shadow"]
 code = "shader_type canvas_item;
 void fragment() {
-	COLOR = vec4(0.0, 0.0, 0.0, texture(TEXTURE, UV).a * 0.75);
+	vec2 ps = TEXTURE_PIXEL_SIZE;
+	float a = texture(TEXTURE, UV).a;
+	float nb = clamp(
+		texture(TEXTURE, UV + vec2(4.0, 0.0) * ps).a +
+		texture(TEXTURE, UV + vec2(-4.0, 0.0) * ps).a +
+		texture(TEXTURE, UV + vec2(0.0, 4.0) * ps).a +
+		texture(TEXTURE, UV + vec2(0.0, -4.0) * ps).a,
+		0.0, 1.0);
+	float border = nb * (1.0 - a);
+	COLOR = vec4(0.6 * border, 0.6 * border, 0.6 * border, a * 0.75 + border);
 }"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_shadow"]

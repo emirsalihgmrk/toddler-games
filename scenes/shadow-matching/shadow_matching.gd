@@ -1,6 +1,7 @@
 extends Control
 
 const SNAP_THRESHOLD  := 90.0
+const DRAG_SCALE      := 0.82
 const SHAPE_SETS := [
 	["circle", "heart", "star", "triangle"],
 	["square", "cloud", "flower", "hexagon"],
@@ -37,9 +38,19 @@ func _ready() -> void:
 		_item_home_pos[s_cap]  = drag.position
 		_item_home_size[s_cap] = drag.size
 	$BackButton.pressed.connect(_on_back_pressed)
-	var delays := [0.0, 0.9, 1.8, 2.7]
+	for i in _shapes.size():
+		var shadow := get_node("Shadow_" + _shapes[i]) as TextureRect
+		shadow.pivot_offset = shadow.size / 2.0
+		shadow.scale = Vector2.ZERO
+		var stw := create_tween()
+		stw.tween_interval(i * 0.15)
+		stw.tween_property(shadow, "scale", Vector2.ONE, 0.35) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var delays := [0.6, 1.5, 2.4, 3.3]
 	for i in _shapes.size():
 		var item := right_panel.get_node("DragItem_" + _shapes[i]) as TextureRect
+		item.pivot_offset = item.size / 2.0
+		item.scale = Vector2(DRAG_SCALE, DRAG_SCALE)
 		_start_wobble(item, delays[i])
 
 func _input(event: InputEvent) -> void:
@@ -97,9 +108,11 @@ func _correct_match(item: TextureRect, shape: String) -> void:
 	shadow.hide()
 	snd_correct.play()
 
+	item.pivot_offset = item.size / 2.0
 	var tw := create_tween().set_parallel()
-	tw.tween_property(item, "global_position", shadow.global_position, 0.18)
-	tw.tween_property(item, "size",            shadow.size,            0.18)
+	tw.tween_property(item, "global_position", shadow.global_position, 0.22)
+	tw.tween_property(item, "scale", Vector2.ONE, 0.28) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.chain().tween_callback(func(): _start_wobble(item, 0.0))
 
 	_matched_count += 1
@@ -121,6 +134,7 @@ func _return_home(item: TextureRect, shape: String) -> void:
 	item.reparent(right_panel, false)
 	item.position = _item_home_pos[shape]
 	item.size     = _item_home_size[shape]
+	item.scale    = Vector2(DRAG_SCALE, DRAG_SCALE)
 	_start_wobble(item, 0.6)
 
 func _find_item(shape: String) -> TextureRect:
