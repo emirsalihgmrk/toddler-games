@@ -1,0 +1,183 @@
+[gd_scene format=3 uid="uid://dqpv3ghn5qx73"]
+
+[ext_resource type="AudioStream" path="res://assets/audio/bobble-pop.wav" id="5_snd_pickup"]
+[ext_resource type="AudioStream" path="res://assets/audio/correct.mp3" id="6_snd_correct"]
+[ext_resource type="AudioStream" path="res://assets/audio/wrong.mp3" id="7_snd_wrong"]
+[ext_resource type="AudioStream" path="res://assets/audio/success.mp3" id="8_snd_success"]
+[ext_resource type="Script" path="res://scenes/shadow-matching/shadow_matching.gd" id="9_script"]
+
+[sub_resource type="Shader" id="Shader_grid"]
+code = "shader_type canvas_item;
+void fragment() {
+	vec2 uv = UV * vec2(46.0, 32.0);
+	vec2 g = abs(fract(uv - 0.5) - 0.5) / fwidth(uv);
+	float line = 1.0 - min(min(g.x, g.y), 1.0);
+	COLOR = mix(vec4(0.937, 0.945, 0.965, 1.0), vec4(0.71, 0.78, 0.87, 1.0), line * 0.6);
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_grid"]
+shader = SubResource("Shader_grid")
+
+[sub_resource type="Shader" id="Shader_shadow"]
+code = "shader_type canvas_item;
+void fragment() {
+	COLOR = vec4(0.0, 0.0, 0.0, texture(TEXTURE, UV).a * 0.75);
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_shadow"]
+shader = SubResource("Shader_shadow")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.929, 0.506, 0.067, 1.0)
+border_width_left = 6
+border_color = Color(1.0, 0.651, 0.0, 0.9)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
+bg_color = Color(0.141, 0.686, 0.216, 1.0)
+corner_radius_top_left = 36
+corner_radius_top_right = 36
+corner_radius_bottom_left = 36
+corner_radius_bottom_right = 36
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+bg_color = Color(0.18, 0.78, 0.26, 1.0)
+corner_radius_top_left = 36
+corner_radius_top_right = 36
+corner_radius_bottom_left = 36
+corner_radius_bottom_right = 36
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+bg_color = Color(0.09, 0.53, 0.15, 1.0)
+corner_radius_top_left = 36
+corner_radius_top_right = 36
+corner_radius_bottom_left = 36
+corner_radius_bottom_right = 36
+
+[node name="ShadowMatching" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_script")
+
+[node name="GridBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchor_right = 0.8
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+material = SubResource("ShaderMaterial_grid")
+color = Color(0.937, 0.945, 0.965, 1.0)
+
+[node name="RightPanel" type="Panel" parent="."]
+layout_mode = 1
+anchor_left = 0.8
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Shadow_0" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 225.0
+offset_top = 80.0
+offset_right = 375.0
+offset_bottom = 230.0
+expand_mode = 1
+stretch_mode = 5
+material = SubResource("ShaderMaterial_shadow")
+
+[node name="Shadow_1" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 95.0
+offset_top = 365.0
+offset_right = 245.0
+offset_bottom = 515.0
+expand_mode = 1
+stretch_mode = 5
+material = SubResource("ShaderMaterial_shadow")
+
+[node name="Shadow_2" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 465.0
+offset_top = 365.0
+offset_right = 615.0
+offset_bottom = 515.0
+expand_mode = 1
+stretch_mode = 5
+material = SubResource("ShaderMaterial_shadow")
+
+[node name="Shadow_3" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 655.0
+offset_top = 90.0
+offset_right = 805.0
+offset_bottom = 240.0
+expand_mode = 1
+stretch_mode = 5
+material = SubResource("ShaderMaterial_shadow")
+
+[node name="DragItem_0" type="TextureRect" parent="RightPanel"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 6.0
+offset_right = 190.0
+offset_bottom = 156.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DragItem_1" type="TextureRect" parent="RightPanel"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 168.0
+offset_right = 190.0
+offset_bottom = 318.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DragItem_2" type="TextureRect" parent="RightPanel"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 330.0
+offset_right = 190.0
+offset_bottom = 480.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DragItem_3" type="TextureRect" parent="RightPanel"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 492.0
+offset_right = 190.0
+offset_bottom = 642.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SndPickup" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_snd_pickup")
+
+[node name="SndCorrect" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_snd_correct")
+
+[node name="SndWrong" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_snd_wrong")
+
+[node name="SndSuccess" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_snd_success")
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 82.0
+offset_bottom = 82.0
+text = "◄"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 1.0)
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn")
