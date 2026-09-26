@@ -1,10 +1,13 @@
 extends Control
 
 const SNAP_THRESHOLD  := 90.0
-const DRAG_SCALE      := 0.82
+const REST_SCALE      := 0.762
 const SHAPE_SETS := [
 	["circle", "heart", "star", "triangle"],
 	["square", "cloud", "flower", "hexagon"],
+	["rocket", "soccer_ball", "building_block", "teddy_bear"],
+	["police_car", "fire_truck", "taxi", "ambulance"],
+	["airplane", "train", "ship", "submarine"],
 ]
 const LevelCompleteScene = preload("res://scenes/level_complete/level_complete.tscn")
 
@@ -37,21 +40,26 @@ func _ready() -> void:
 		drag.name      = "DragItem_" + s_cap
 		_item_home_pos[s_cap]  = drag.position
 		_item_home_size[s_cap] = drag.size
+		# Panel items rest smaller than the shadows; they grow to full (shadow) size when dragged.
+		drag.pivot_offset = drag.size / 2.0
+		drag.scale        = Vector2(REST_SCALE, REST_SCALE)
 	$BackButton.pressed.connect(_on_back_pressed)
+	_animate_shadows_in()
+	var delays := [0.0, 0.9, 1.8, 2.7]
+	for i in _shapes.size():
+		var item := right_panel.get_node("DragItem_" + _shapes[i]) as TextureRect
+		_start_wobble(item, delays[i])
+
+func _animate_shadows_in() -> void:
 	for i in _shapes.size():
 		var shadow := get_node("Shadow_" + _shapes[i]) as TextureRect
 		shadow.pivot_offset = shadow.size / 2.0
-		shadow.scale = Vector2.ZERO
-		var stw := create_tween()
-		stw.tween_interval(i * 0.15)
-		stw.tween_property(shadow, "scale", Vector2.ONE, 0.35) \
-			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	var delays := [0.6, 1.5, 2.4, 3.3]
-	for i in _shapes.size():
-		var item := right_panel.get_node("DragItem_" + _shapes[i]) as TextureRect
-		item.pivot_offset = item.size / 2.0
-		item.scale = Vector2(DRAG_SCALE, DRAG_SCALE)
-		_start_wobble(item, delays[i])
+		shadow.modulate.a   = 0.0
+		shadow.scale        = Vector2(0.8, 0.8)
+		var tw := create_tween().set_parallel() \
+				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(shadow, "modulate:a", 1.0, 0.3).set_delay(i * 0.08)
+		tw.tween_property(shadow, "scale", Vector2.ONE, 0.3).set_delay(i * 0.08)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -73,6 +81,12 @@ func _try_pick_up(gpos: Vector2) -> void:
 			item.global_position = saved_pos
 			_dragging    = item
 			_drag_offset = saved_pos - gpos
+			# Grow to full (shadow) size when the drag starts; scale grows around the centered pivot.
+			item.pivot_offset = item.size / 2.0
+			var shadow := get_node("Shadow_" + s) as TextureRect
+			var full_scale := shadow.size.x / item.size.x
+			create_tween().tween_property(item, "scale", Vector2(full_scale, full_scale), 0.12) \
+					.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 			snd_pickup.play()
 			return
 
@@ -110,9 +124,10 @@ func _correct_match(item: TextureRect, shape: String) -> void:
 
 	item.pivot_offset = item.size / 2.0
 	var tw := create_tween().set_parallel()
-	tw.tween_property(item, "global_position", shadow.global_position, 0.22)
-	tw.tween_property(item, "scale", Vector2.ONE, 0.28) \
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(item, "global_position", shadow.global_position, 0.18)
+	tw.tween_property(item, "size",            shadow.size,            0.18)
+	tw.tween_property(item, "scale",           Vector2.ONE,            0.18) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.chain().tween_callback(func(): _start_wobble(item, 0.0))
 
 	_matched_count += 1
@@ -134,7 +149,7 @@ func _return_home(item: TextureRect, shape: String) -> void:
 	item.reparent(right_panel, false)
 	item.position = _item_home_pos[shape]
 	item.size     = _item_home_size[shape]
-	item.scale    = Vector2(DRAG_SCALE, DRAG_SCALE)
+	item.scale    = Vector2(REST_SCALE, REST_SCALE)
 	_start_wobble(item, 0.6)
 
 func _find_item(shape: String) -> TextureRect:

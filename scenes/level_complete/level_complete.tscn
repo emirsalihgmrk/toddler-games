@@ -20,14 +20,6 @@ script = ExtResource("2_confetti")
 [node name="VBox" type="VBoxContainer" parent="UI/Center"]
 theme_override_constants/separation = 16
 
-[node name="StarsTop" type="Label" parent="UI/Center/VBox"]
-text = "  ★    ★    ★  "
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(1.0, 0.88, 0.0, 1.0)
-theme_override_font_sizes/font_size = 52
-theme_override_colors/font_outline_color = Color(0.45, 0.25, 0.0, 1.0)
-theme_override_constants/outline_size = 4
-
 [node name="CongratsLabel" type="Label" parent="UI/Center/VBox"]
 text = "CONGRATULATIONS!"
 horizontal_alignment = 1
@@ -35,13 +27,5 @@ theme_override_font_sizes/font_size = 76
 theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 1.0)
 theme_override_colors/font_outline_color = Color(0.0, 0.0, 0.0, 0.9)
 theme_override_constants/outline_size = 7
-
-[node name="StarsBot" type="Label" parent="UI/Center/VBox"]
-text = "  ★    ★    ★  "
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(1.0, 0.88, 0.0, 1.0)
-theme_override_font_sizes/font_size = 52
-theme_override_colors/font_outline_color = Color(0.45, 0.25, 0.0, 1.0)
-theme_override_constants/outline_size = 4
 
 [node name="Audio" type="AudioStreamPlayer" parent="."]

@@ -39,12 +39,3 @@ func _animate() -> void:
 	var tw_c := create_tween().set_loops()
 	for c in cols:
 		tw_c.tween_property(label, "modulate", c, 0.38).set_trans(Tween.TRANS_SINE)
-
-	# Stars subtle pulse (offset phase)
-	for star_path in ["UI/Center/VBox/StarsTop", "UI/Center/VBox/StarsBot"]:
-		var star: Label = get_node(star_path)
-		star.pivot_offset = star.size / 2.0
-		var tw_star := create_tween().set_loops()
-		tw_star.tween_interval(0.25)
-		tw_star.tween_property(star, "scale", Vector2(1.12, 1.12), 0.45).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		tw_star.tween_property(star, "scale", Vector2(1.0,  1.0 ), 0.45).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
