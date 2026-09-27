@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://k64xqayxdssg"
-path="res://.godot/imported/lucid-origin_A_collection_of_4_cute_2D_toy_vehicles_shown_in_a_completely_flat_side_profile_a-0-removebg-preview.png-76a62e0a6724705e9f564e26b72d11e9.ctex"
+uid="uid://q5dp07npoe67"
+path="res://.godot/imported/giraffe.png-05fd10bc684319ae3458cc50793f5eef.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scenes/shadow-matching/assets/lucid-origin_A_collection_of_4_cute_2D_toy_vehicles_shown_in_a_completely_flat_side_profile_a-0-removebg-preview.png"
-dest_files=["res://.godot/imported/lucid-origin_A_collection_of_4_cute_2D_toy_vehicles_shown_in_a_completely_flat_side_profile_a-0-removebg-preview.png-76a62e0a6724705e9f564e26b72d11e9.ctex"]
+source_file="res://scenes/shadow-matching/assets/sprites/giraffe.png"
+dest_files=["res://.godot/imported/giraffe.png-05fd10bc684319ae3458cc50793f5eef.ctex"]
 
 [params]
 

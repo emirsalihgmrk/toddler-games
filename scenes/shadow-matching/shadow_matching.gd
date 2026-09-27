@@ -8,6 +8,10 @@ const SHAPE_SETS := [
 	["rocket", "soccer_ball", "building_block", "teddy_bear"],
 	["police_car", "fire_truck", "taxi", "ambulance"],
 	["airplane", "train", "ship", "submarine"],
+	["cow", "bear", "rabbit", "turtle"],
+	["horse", "giraffe", "rhino", "lion"],
+	["earth", "saturn", "moon", "sun"],
+	["shorts", "sweater", "hat", "glasses"],
 ]
 const LevelCompleteScene = preload("res://scenes/level_complete/level_complete.tscn")
 
@@ -17,7 +21,6 @@ var _drag_offset   : Vector2
 var _item_home_pos : Dictionary  = {}
 var _item_home_size: Dictionary  = {}
 var _matched_count := 0
-var _wobble_tweens : Dictionary  = {}
 
 @onready var right_panel : Panel             = $RightPanel
 @onready var snd_pickup  : AudioStreamPlayer = $SndPickup
@@ -48,7 +51,7 @@ func _ready() -> void:
 	var delays := [0.0, 0.9, 1.8, 2.7]
 	for i in _shapes.size():
 		var item := right_panel.get_node("DragItem_" + _shapes[i]) as TextureRect
-		_start_wobble(item, delays[i])
+		Juice.start_wobble(item, delays[i])
 
 func _animate_shadows_in() -> void:
 	for i in _shapes.size():
@@ -75,7 +78,7 @@ func _try_pick_up(gpos: Vector2) -> void:
 		var item := _find_item(s)
 		if item and not item.get_meta("matched", false) \
 				and item.get_global_rect().has_point(gpos):
-			_stop_wobble(item)
+			Juice.stop_wobble(item)
 			var saved_pos := item.global_position
 			item.reparent(self)
 			item.global_position = saved_pos
@@ -119,6 +122,7 @@ func _try_drop() -> void:
 func _correct_match(item: TextureRect, shape: String) -> void:
 	var shadow := get_node("Shadow_" + shape) as TextureRect
 	item.set_meta("matched", true)
+	Juice.celebrate(self, shadow.get_global_rect().get_center())
 	shadow.hide()
 	snd_correct.play()
 
@@ -128,7 +132,7 @@ func _correct_match(item: TextureRect, shape: String) -> void:
 	tw.tween_property(item, "size",            shadow.size,            0.18)
 	tw.tween_property(item, "scale",           Vector2.ONE,            0.18) \
 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.chain().tween_callback(func(): _start_wobble(item, 0.0))
+	tw.chain().tween_callback(func(): Juice.start_wobble(item, 0.0))
 
 	_matched_count += 1
 	if _matched_count >= _shapes.size():
@@ -150,7 +154,7 @@ func _return_home(item: TextureRect, shape: String) -> void:
 	item.position = _item_home_pos[shape]
 	item.size     = _item_home_size[shape]
 	item.scale    = Vector2(REST_SCALE, REST_SCALE)
-	_start_wobble(item, 0.6)
+	Juice.start_wobble(item, 0.6)
 
 func _find_item(shape: String) -> TextureRect:
 	if right_panel.has_node("DragItem_" + shape):
@@ -166,22 +170,6 @@ func _shake_then_return(item: TextureRect, shape: String) -> void:
 	tw.tween_property(item, "rotation_degrees", -7.0, 0.10).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(item, "rotation_degrees",  0.0, 0.08).set_trans(Tween.TRANS_SINE)
 	tw.tween_callback(func(): _return_home(item, shape))
-
-func _start_wobble(item: TextureRect, initial_delay: float) -> void:
-	item.pivot_offset = item.size / 2.0
-	var tw := create_tween().set_loops()
-	tw.tween_interval(initial_delay)
-	tw.tween_property(item, "rotation_degrees",  4.5, 0.30).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_property(item, "rotation_degrees", -4.5, 0.60).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_property(item, "rotation_degrees",  0.0, 0.30).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_interval(2.2)
-	_wobble_tweens[item.name] = tw
-
-func _stop_wobble(item: TextureRect) -> void:
-	if _wobble_tweens.has(item.name):
-		_wobble_tweens[item.name].kill()
-		_wobble_tweens.erase(item.name)
-	item.rotation_degrees = 0.0
 
 func _on_back_pressed() -> void:
 	get_tree().reload_current_scene()
