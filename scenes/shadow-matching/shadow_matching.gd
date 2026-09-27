@@ -12,6 +12,7 @@ const SHAPE_SETS := [
 	["horse", "giraffe", "rhino", "lion"],
 	["earth", "saturn", "moon", "sun"],
 	["shorts", "sweater", "hat", "glasses"],
+	["lion", "fire_truck", "hat", "saturn"],
 ]
 const LevelCompleteScene = preload("res://scenes/level_complete/level_complete.tscn")
 
